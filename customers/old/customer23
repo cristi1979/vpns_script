@@ -1,0 +1,5 @@
+TYPE="CISCO"
+IP=(192.168.10.56)
+#ROUTE=""
+#REM_ROUTE=""
+#ALIVE=""

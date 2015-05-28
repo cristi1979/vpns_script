@@ -1,0 +1,5 @@
+TYPE="dummy"
+IP=(10.0.0.99)
+ROUTE=(x00.x.x44.x5)
+ALIVE="ping"
+RETRIES=10000

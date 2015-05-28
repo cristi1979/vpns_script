@@ -1,0 +1,125 @@
+#!/bin/sh
+
+chmod u+s `which ping` >/dev/null 2>&1 &
+STATUS_DIR="/var/log/mind/vpn/status/"
+mkdir -p $STATUS_DIR
+all_vpns=()
+ok_vpns=()
+values_vpns=()
+
+function get_all_customers {
+    for cust in $(find /usr/local/vpn/customers/ -maxdepth 1 -type f | sort); do
+	name=$(basename "$cust")
+	if [ $name != "failed_retries" -a $name != "null" ];then
+	    all_vpns+=($name)
+        fi
+    done
+}
+
+function config_global {
+	echo -e \
+multigraph mind_vpns_uptime"\n"\
+update_rate 120"\n"\
+graph_data_size "custom 1y, 1h for 2y, 1d for 5y\n"\
+graph_title VPNs status"\n"\
+graph_category mind_network"\n"\
+graph_vlabel "uptime in seconds\n"\
+graph_scale no"\n"\
+graph_info "Number of seconds from last start\n"
+	for cust in "${all_vpns[@]}";do
+	    echo -e \
+${cust}_uptime.label "$cust\n"\
+${cust}_uptime.type GAUGE"\n"\
+${cust}_uptime.min 0"\n"\
+${cust}_uptime.draw LINE1
+	done
+}
+
+function config_individual {
+	for cust in "${all_vpns[@]}";do
+	    echo -e "\n"\
+multigraph mind_vpns_uptime.$cust"\n"\
+update_rate 120"\n"\
+graph_data_size "custom 1y, 1h for 2y, 1d for 5y\n"\
+graph_title $cust VPN status"\n"\
+graph_category mind_network"\n"\
+graph_vlabel "uptime in seconds\n"\
+graph_info "Number of seconds from last start\n"\
+graph_scale "no\n"\
+${cust}_uptime.label "$cust uptime\n"\
+${cust}_uptime.type GAUGE"\n"\
+${cust}_uptime.min 0"\n"\
+${cust}_uptime.draw LINE1
+	done
+}
+
+get_all_customers
+
+case $1 in
+    config)
+	config_global
+	config_individual
+    exit 0;;
+esac
+
+function get_values {
+    for cust in "${all_vpns[@]}";do
+        bash /usr/local/vpn/run_all.sh -test $cust >/dev/null 2>&1 &
+        pid=$!
+        pids+=($pid)
+        ok_vpns[$pid]="$cust"
+    done
+    for pid in "${pids[@]}"; do
+	#wait $pid && values_vpns+=(${ok_vpns[$pid]}"_"$(echo $(date -u +%s)-$(cat "$STATUS_DIR/${ok_vpns[$pid]}" 2>/dev/null || echo 9999999999) | bc))
+	wait $pid && values_vpns[$pid]=$(date -u +%s)
+    done
+}
+
+function array_diff {
+    arr_diff=()
+    for pid in ${!ok_vpns[*]}; do
+	if [ ${values_vpns[$pid]} ];then 
+	    DIFF=$(echo ${values_vpns[$pid]}-$(cat "$STATUS_DIR/${ok_vpns[$pid]}" 2>/dev/null || echo 9999999999) | bc)
+	    if [ $DIFF -gt 0 ];then
+		values_vpns[$pid]="${ok_vpns[$pid]}_$DIFF"
+	    else
+		values_vpns[$pid]="${ok_vpns[$pid]}_0"
+	    fi
+	else
+	    values_vpns[$pid]="${ok_vpns[$pid]}_0"
+	fi
+    done
+}
+
+function print_values_global {
+	echo -e \
+multigraph mind_vpns_uptime
+    for cust in "${values_vpns[@]}";do
+	arr=(${cust//_/ })
+	name=${arr[0]}
+	value=${arr[1]}
+	if [ $value -ge 0 ];then
+	echo -e \
+${name}_uptime.value $value
+	fi
+    done
+}
+
+function print_values_individual {
+    for cust in "${values_vpns[@]}";do
+	arr=(${cust//_/ })
+	name=${arr[0]}
+	value=${arr[1]}
+	if [ $value -ge 0 ];then
+	echo -e "\n"\
+multigraph mind_vpns_uptime.$name"\n"\
+${name}_uptime.value $value
+	fi
+    done
+}
+
+get_values
+array_diff
+print_values_global
+print_values_individual
+exit 0

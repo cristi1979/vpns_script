@@ -1,0 +1,73 @@
+table, th, td, .ui-widget-content{
+  border: 0px solid black;
+}
+
+body {
+  margin:12px; 
+/*   font-size: 80%; */
+  background:white;
+}
+
+div.log_area {
+  width: 650px;
+   height: 600px;
+  font-size: 0.6em;
+}
+
+textarea {
+   width: 100%;
+   height: 100%;
+   border:2px solid #aabbcc;
+   padding: 0px !important;
+}
+
+input {
+  border:2px solid #aabbcc;
+}
+
+td {
+   vertical-align: top;
+}
+
+td.selected{
+  border-left:3px solid #aabbcc;
+  border-top:3px solid #aabbcc;
+  border-bottom:3px solid #aabbcc;
+  border-right:0px hidden #000;
+}
+
+.vpn_btn {
+  width: 250px;
+  text-align:left;
+}
+
+#current *{
+  background-color: #EBF0C0; 
+}
+
+.vpn_active *{
+  background-color: #D1F6D1; 
+}
+
+.vpn_failed *{
+  background-color: #FF9999; 
+}
+
+.vpn_disabled *{
+  background-color: #CCC6C8; 
+}
+
+.boxsizingBorder {
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+}
+
+.test {
+  width: 100px;
+}
+
+.extra_stuff {
+   width: 10%;
+   height: 10%;
+}

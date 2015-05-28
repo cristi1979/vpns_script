@@ -1,0 +1,13 @@
+# written by pptpsetup
+pty "pptp ip.address --nolaunchpppd"
+lock
+noauth
+nobsdcomp
+nodeflate
+name Administrator
+remotename user_vpn
+require-mppe-128
+linkname voyport
+file /etc/ppp/options.pptp
+logfile /var/log/pptp_voyport.log
+#persist

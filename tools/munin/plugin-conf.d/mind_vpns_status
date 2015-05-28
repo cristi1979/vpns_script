@@ -1,0 +1,3 @@
+[mind_vpns_status]
+timeout 60
+update_rate 120

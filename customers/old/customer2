@@ -1,0 +1,5 @@
+TYPE="CISCO"
+IP=()
+ROUTE=()
+REM_ROUTE=()
+ALIVE=""

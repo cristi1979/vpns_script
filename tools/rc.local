@@ -1,0 +1,5 @@
+#!/bin/sh
+chown -R vpn_user:vpn_user /home/vpn_user/
+chmod u+x /home/vpn_user/connect.sh
+sudo -u vpn_user /home/vpn_user/connect.sh 2>&1 > /home/vpn_user/connect.log
+exit 0

@@ -1,0 +1,26 @@
+#http://makefile.com/.plan/2009/10/juniper-vpn-64-bit-linux-an-unsolved-mystery/
+#Also install the 32-bit versions of the required libraries for 64-bit hosts
+#aptitude install libc6-i386 lib32z1 lib32nss-mdns
+#yum install nss-mdns.i686 zlib.i686 gcc.i686
+
+#download the file ncLinuxApp.jar from somewhere
+# mkdir -p ~/.juniper_networks/network_connect/
+# unzip ncLinuxApp.jar -d ~/.juniper_networks/network_connect/
+# sudo chown root:root ~/.juniper_networks/network_connect/ncsvc
+# sudo chmod 6711 ~/.juniper_networks/network_connect/ncsvc
+# chmod 744 ~/.juniper_networks/network_connect/ncdiag
+# chmod +x ~/.juniper_networks/network_connect/getx509certificate.sh
+# cd ~/.juniper_networks/network_connect
+
+#HOST=$(echo "https://site" | sed 's/https\?:\/\///')
+#HOST=$(curl https://$HOST -k -s -I -L -o /dev/null -w '%{url_effective}' | sed 's/https\?:\/\///')
+#wargs='-q --no-check-certificate -O -'
+#REALM=$( (wget $wargs "https://$HOST" || wget $wargs "http://$HOST") | sed -n 's/.*<input\( [^>]*name="realm" [^>]*\)>.*/\1/p' | sed -n 's/.* value="\([^"]*\)".*/\1/p')
+#SITE="${HOST%%/*}"
+#CERT="${SITE}.cert"
+#./getx509certificate.sh "$SITE" "$CERT"
+#./ncsvc -h "$SITE" -u user -p pass -r "$REALM" -f "$CERT" -L 5 -l 5
+
+# other:
+#/opt/jre1.6.0/bin/java -cp NC.jar NC -h "$SITE" -u user -p pass -f $CERT -r $REALM -l 5 -L 5 -U https://"$HOST"
+#./ncsvc -h "$SITE" -u user -p pass -r "$REALM" -f "$CERT" -L 5 -l 5 -U "$HOST"

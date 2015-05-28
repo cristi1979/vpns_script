@@ -1,0 +1,2 @@
+gem uninstall $(gem list | cut -d" " -f1) -Iax
+gem install watir-webdriver

@@ -1,0 +1,48 @@
+#!/bin/sh
+#* reason                       -- why this script was called, one of: pre-init connect disconnect
+#* VPNGATEWAY                   -- vpn gateway address (always present)
+#* TUNDEV                       -- tunnel device (always present)
+#* INTERNAL_IP4_ADDRESS         -- address (always present)
+#* INTERNAL_IP4_NETMASK         -- netmask (often unset)
+#* INTERNAL_IP4_NETMASKLEN      -- netmask length (often unset)
+#* INTERNAL_IP4_NETADDR         -- address of network (only present if netmask is set)
+#* INTERNAL_IP4_DNS             -- list of dns serverss
+#* INTERNAL_IP4_NBNS            -- list of wins servers
+#* CISCO_DEF_DOMAIN             -- default domain name
+#* CISCO_BANNER                 -- banner from server
+#* CISCO_SPLIT_INC              -- number of networks in split-network-list
+#* CISCO_SPLIT_INC_%d_ADDR      -- network address
+#* CISCO_SPLIT_INC_%d_MASK      -- subnet mask (for example: 255.255.255.0)
+#* CISCO_SPLIT_INC_%d_MASKLEN   -- subnet masklen (for example: 24)
+#* CISCO_SPLIT_INC_%d_PROTOCOL  -- protocol (often just 0)
+#* CISCO_SPLIT_INC_%d_SPORT     -- source port (often just 0)
+#* CISCO_SPLIT_INC_%d_DPORT     -- destination port (often just 0)
+
+if [[ $reason == "connect" ]];then 
+    echo 1 $reason
+    echo 2 $VPNGATEWAY                 
+    echo 3 $TUNDEV                     
+    echo 4 $INTERNAL_IP4_ADDRESS       
+    echo 5 $INTERNAL_IP4_NETMASK       
+    echo 6 $INTERNAL_IP4_NETMASKLEN    
+    echo 7 $INTERNAL_IP4_NETADDR       
+    echo 8 $INTERNAL_IP4_DNS           
+    echo 9 $INTERNAL_IP4_NBNS          
+    echo 10 $CISCO_DEF_DOMAIN           
+    echo 11 $CISCO_BANNER               
+    echo 12 $CISCO_SPLIT_INC            
+    if [ -n "$CISCO_SPLIT_INC" ]; then
+		i=0 ; while [ "$i" -lt "$CISCO_SPLIT_INC" ] ; do
+			eval NETWORK="\${CISCO_SPLIT_INC_${i}_ADDR}"
+			eval NETMASK="\${CISCO_SPLIT_INC_${i}_MASK}"
+			eval NETMASKLEN="\${CISCO_SPLIT_INC_${i}_MASKLEN}"
+			echo 13   $i "$NETWORK" "$NETMASK" "$NETMASKLEN"
+			i=$(($i + 1))
+		done
+    fi
+fi
+
+# this effectively disables changes to /etc/resolv.conf
+INTERNAL_IP4_DNS=
+
+. /etc/vpnc/vpnc-script
